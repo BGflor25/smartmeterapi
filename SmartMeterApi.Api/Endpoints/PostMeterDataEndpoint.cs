@@ -20,6 +20,7 @@ namespace SmartMeterApi.Api.Endpoints
 
         public override async Task HandleAsync(MeterDataDto req, CancellationToken ct)
         {
+            Logger.LogInformation("Received meter data upload request.");
             await _mediator.Send(new AddMeterDataCommand(req), ct);
             await Send.NoContentAsync();
         }
