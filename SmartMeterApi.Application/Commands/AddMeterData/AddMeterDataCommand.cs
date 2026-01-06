@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Microsoft.IdentityModel.Abstractions;
+using Serilog;
 using SmartMeterApi.Application.Interfaces;
+using SmartMeterApi.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +21,13 @@ namespace SmartMeterApi.Application.Commands.AddMeterData
 
         private class AddMeterDataCommandHandler : IRequestHandler<AddMeterDataCommand, Guid>
         {
-            private readonly ISmartMeterDbContext _context;
+            private readonly IInfluxService _influxService;
+            private readonly ILogger _logger;
 
-            public AddMeterDataCommandHandler(ISmartMeterDbContext context)
+            public AddMeterDataCommandHandler(IInfluxService influxService, ILogger logger)
             {
-                _context = context;
+                _influxService = influxService;
+                _logger = logger;
             }
 
             public async Task<Guid> Handle(AddMeterDataCommand request, CancellationToken cancellationToken)
@@ -54,8 +59,8 @@ namespace SmartMeterApi.Application.Commands.AddMeterData
                     GasConsumption = request.Dto.GasConsumption,
                     GasReadStatus = request.Dto.GasReadStatus
                 };
-                var id = await _context.AddMeterData(meterData);
-                await _context.SaveChangesAsync();
+                await _influxService.WriteAsync(meterData,new CancellationToken());
+                _logger.Information($"Meter data ready for saving");
                 return Guid.NewGuid();
             }
         }

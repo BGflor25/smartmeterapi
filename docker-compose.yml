@@ -1,0 +1,6 @@
+services:
+  smartmeterapi.api:
+    image: ${DOCKER_REGISTRY-}smartmeterapiapi
+    build:
+      context: .
+      dockerfile: SmartMeterApi.Api/Dockerfile
