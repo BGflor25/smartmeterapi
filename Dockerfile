@@ -4,17 +4,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-# ASP.NET Core will listen on 8080 inside container
+# Bind to all interfaces inside container
 ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 EXPOSE 8080
 
 # ---------------------------------
 # Build stage
 # ---------------------------------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
+# Copy csproj files first for better layer caching
 COPY ["SmartMeterApi.Api/SmartMeterApi.Api.csproj", "SmartMeterApi.Api/"]
 COPY ["SmartMeterApi.Application/SmartMeterApi.Application.csproj", "SmartMeterApi.Application/"]
 COPY ["SmartMeterApi.Domain/SmartMeterApi.Domain.csproj", "SmartMeterApi.Domain/"]
@@ -22,17 +24,13 @@ COPY ["SmartMeterApi.Infrastructure/SmartMeterApi.Infrastructure.csproj", "Smart
 
 RUN dotnet restore "SmartMeterApi.Api/SmartMeterApi.Api.csproj"
 
+# Copy remaining source
 COPY . .
-WORKDIR "/src/SmartMeterApi.Api"
-RUN dotnet build "SmartMeterApi.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# ---------------------------------
-# Publish stage
-# ---------------------------------
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
+WORKDIR "/src/SmartMeterApi.Api"
+
 RUN dotnet publish "SmartMeterApi.Api.csproj" \
-    -c $BUILD_CONFIGURATION \
+    -c Release \
     -o /app/publish \
     /p:UseAppHost=false
 
@@ -42,9 +40,15 @@ RUN dotnet publish "SmartMeterApi.Api.csproj" \
 FROM base AS final
 WORKDIR /app
 
-# IMPORTANT: do NOT hardcode Development in containers
-ENV ASPNETCORE_ENVIRONMENT=Production
+# Run as non-root user (security best practice)
+RUN useradd -m appuser
+USER appuser
 
-COPY --from=publish /app/publish .
+# Copy published output
+COPY --from=build /app/publish .
+
+# Optional healthcheck (enable once /health exists)
+# HEALTHCHECK --interval=30s --timeout=3s \
+#   CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "SmartMeterApi.Api.dll"]
