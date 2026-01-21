@@ -39,7 +39,10 @@ public sealed class InfluxService : IInfluxService
             .Field("gas_consumption", meterData.GasConsumption)
             .Field("event_log_count", meterData.EventLogCount)
             .Field("MeterStatus", meterData.MeterStatus)
-            .Field("TariffIndicator", meterData.TariffIndicator);
+            .Field("TariffIndicator", meterData.TariffIndicator)
+            .Field("total_power_usage", meterData.TotalImportedActiveEnergy)
+            .Field("total_power_delivery", meterData.TotalActivePowerExported);
+
             //.Timestamp(meterData.Timestamp, WritePrecision.S);
 
         await writeApi.WritePointAsync(point, _bucket, _org, ct);
