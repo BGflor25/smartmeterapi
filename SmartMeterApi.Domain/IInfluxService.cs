@@ -9,6 +9,8 @@ namespace SmartMeterApi.Domain
 {
     public interface IInfluxService
     {
-        public Task WriteAsync(MeterData meterData, CancellationToken ct = default);
+        public Task WriteSmartMeterDataAsync(SmartMeterData meterData);
+        public Task WriteWaterSoftenerDataAsync(WaterSoftenerCapacity waterSoftenerCapacity);
+
     }
 }

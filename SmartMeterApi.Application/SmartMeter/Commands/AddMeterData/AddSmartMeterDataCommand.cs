@@ -9,17 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartMeterApi.Application.Commands.AddMeterData
+namespace SmartMeterApi.Application.SmartMeter.Commands.AddMeterData
 {
-    public class AddMeterDataCommand : IRequest<Guid>
+    public class AddSmartMeterDataCommand : IRequest<Guid>
     {
-        public AddMeterDataCommand(MeterDataDto dto)
+        public AddSmartMeterDataCommand(SmartMeterDataDto dto)
         { 
             Dto = dto;
         }
-        public MeterDataDto Dto { get; }
+        public SmartMeterDataDto Dto { get; }
 
-        private class AddMeterDataCommandHandler : IRequestHandler<AddMeterDataCommand, Guid>
+        private class AddMeterDataCommandHandler : IRequestHandler<AddSmartMeterDataCommand, Guid>
         {
             private readonly IInfluxService _influxService;
             private readonly ILogger _logger;
@@ -30,9 +30,9 @@ namespace SmartMeterApi.Application.Commands.AddMeterData
                 _logger = logger;
             }
 
-            public async Task<Guid> Handle(AddMeterDataCommand request, CancellationToken cancellationToken)
+            public async Task<Guid> Handle(AddSmartMeterDataCommand request, CancellationToken cancellationToken)
             {
-                var meterData = new Domain.Entities.MeterData
+                var meterData = new Domain.Entities.SmartMeterData
                 {
                     MeterModel = request.Dto.MeterModel,
                     EquipmentIdentifier = request.Dto.EquipmentIdentifier,
@@ -59,8 +59,8 @@ namespace SmartMeterApi.Application.Commands.AddMeterData
                     GasConsumption = request.Dto.GasConsumption,
                     GasReadStatus = request.Dto.GasReadStatus
                 };
-                await _influxService.WriteAsync(meterData,new CancellationToken());
-                _logger.Information($"Meter data ready for saving");
+                await _influxService.WriteSmartMeterDataAsync(meterData);
+                _logger.Information($"Meter data added");
                 return Guid.NewGuid();
             }
         }

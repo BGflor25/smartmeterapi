@@ -9,7 +9,7 @@ public sealed class InfluxService : IInfluxService
 {
     private readonly InfluxDBClient _client;
     private readonly string _org;
-    private readonly string _bucket;
+    private readonly string _smartMeterBucket;
 
     public InfluxService(
         InfluxDBClient client,
@@ -17,10 +17,12 @@ public sealed class InfluxService : IInfluxService
     {
         _client = client;
         _org = configuration["InfluxDB:Org"]!;
-        _bucket = configuration["InfluxDB:Bucket"]!;
+        _smartMeterBucket = configuration["InfluxDB:SmartMeterBucket"]!;
+        _waterCapacityBucket = configuration["InfluxDB:WaterCapacityBucket"]!;
+
     }
 
-    public async Task WriteAsync(MeterData meterData, CancellationToken ct = default)
+    public async Task WriteSmartMeterDataAsync(SmartMeterData meterData)
     {
         var writeApi = _client.GetWriteApiAsync();
 
@@ -45,6 +47,17 @@ public sealed class InfluxService : IInfluxService
 
             //.Timestamp(meterData.Timestamp, WritePrecision.S);
 
-        await writeApi.WritePointAsync(point, _bucket, _org, ct);
+        await writeApi.WritePointAsync(point, _smartMeterBucket, _org);
+    }
+
+    public async Task WriteWaterSoftenerDataAsync(WaterSoftenerCapacity waterSoftenerCapacity)
+    {
+        var writeApi = _client.GetWriteApiAsync();
+
+        var point = PointData
+            .Measurement("water_softener_data")
+            .Field("capacity", waterSoftenerCapacity.Percentage);
+
+        await writeApi.WritePointAsync (point, _smartMeterBucket, _org);
     }
 }

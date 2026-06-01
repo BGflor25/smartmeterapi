@@ -11,9 +11,9 @@ namespace SmartMeterApi.Infrastructure
         {
             
         }
-        public virtual DbSet<MeterData> MeterData { get; set; }
+        public virtual DbSet<SmartMeterData> MeterData { get; set; }
 
-        public async Task<Guid> AddMeterData(MeterData meterData)
+        public async Task<Guid> AddSmartMeterData(SmartMeterData meterData)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace SmartMeterApi.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MeterData>(entity =>
+            modelBuilder.Entity<SmartMeterData>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property<bool>("IsLogAnnul");

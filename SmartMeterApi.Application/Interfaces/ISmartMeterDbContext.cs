@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartMeterApi.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,11 @@ namespace SmartMeterApi.Application.Interfaces
 {
     public interface ISmartMeterDbContext
     {
-        DbSet<Domain.Entities.MeterData> MeterData { get; }
+        DbSet<Domain.Entities.SmartMeterData> MeterData { get; }
+        DbSet<Domain.Entities.WaterSoftenerCapacity> WaterSoftenerCapacity { get; }
 
         Task SaveChangesAsync();
-        Task<Guid> AddMeterData(Domain.Entities.MeterData meterData);
+        Task<Guid> AddSmartMeterData(Domain.Entities.SmartMeterData meterData);
+        Task<Guid> AddWaterSoftenerData(WaterSoftenerCapacity capacity);
     }
 }
