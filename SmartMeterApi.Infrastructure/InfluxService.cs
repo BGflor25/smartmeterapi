@@ -10,6 +10,7 @@ public sealed class InfluxService : IInfluxService
     private readonly InfluxDBClient _client;
     private readonly string _org;
     private readonly string _smartMeterBucket;
+    private readonly string _waterCapacityBucket;
 
     public InfluxService(
         InfluxDBClient client,

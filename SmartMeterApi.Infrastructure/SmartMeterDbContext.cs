@@ -13,6 +13,8 @@ namespace SmartMeterApi.Infrastructure
         }
         public virtual DbSet<SmartMeterData> MeterData { get; set; }
 
+        public virtual DbSet<WaterSoftenerCapacity> WaterSoftenerCapacity { get; set; }
+
         public async Task<Guid> AddSmartMeterData(SmartMeterData meterData)
         {
             try
@@ -25,6 +27,8 @@ namespace SmartMeterApi.Infrastructure
             }
             return meterData.Id;
         }
+
+
         public async Task SaveChangesAsync()
         {
             await base.SaveChangesAsync();

@@ -15,6 +15,5 @@ namespace SmartMeterApi.Application.Interfaces
 
         Task SaveChangesAsync();
         Task<Guid> AddSmartMeterData(Domain.Entities.SmartMeterData meterData);
-        Task<Guid> AddWaterSoftenerData(WaterSoftenerCapacity capacity);
     }
 }
