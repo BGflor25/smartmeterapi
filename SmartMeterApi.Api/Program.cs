@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
 using SmartMeterApi.Application.Interfaces;
+using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
 using SmartMeterApi.Domain;
 using SmartMeterApi.Infrastructure;
 
@@ -53,7 +54,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     // MediatR
     services.AddMediatR(cfg =>
         cfg.RegisterServicesFromAssembly(
-            typeof(SmartMeterApi.Application.Commands.AddMeterData.AddMeterDataCommand).Assembly));
+            typeof(AddSmartMeterDataCommand).Assembly));
 
     // Logging
     services.AddSingleton(Log.Logger);

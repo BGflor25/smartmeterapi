@@ -1,14 +1,14 @@
 ﻿using FastEndpoints;
 using MediatR;
 using SmartMeterApi.Domain;
-using SmartMeterApi.Application.Commands.AddMeterData;
+using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
 
 namespace SmartMeterApi.Api.Endpoints
 {
-    public class PostMeterDataEndpoint : Endpoint<MeterDataDto>
+    public class PostSmartMeterDataEndpoint : Endpoint<SmartMeterDataDto>
     {
         private readonly ISender _mediator;
-        public PostMeterDataEndpoint(ISender mediator)
+        public PostSmartMeterDataEndpoint(ISender mediator)
         {
             _mediator = mediator;
         }
@@ -18,10 +18,10 @@ namespace SmartMeterApi.Api.Endpoints
             AllowAnonymous();
         }
 
-        public override async Task HandleAsync(MeterDataDto req, CancellationToken ct)
+        public override async Task HandleAsync(SmartMeterDataDto req, CancellationToken ct)
         {
             Logger.LogInformation("Received meter data upload request.");
-            await _mediator.Send(new AddMeterDataCommand(req), ct);
+            await _mediator.Send(new AddSmartMeterDataCommand(req), ct);
             await Send.NoContentAsync();
         }
     }
