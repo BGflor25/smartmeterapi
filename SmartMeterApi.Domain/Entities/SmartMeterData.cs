@@ -51,6 +51,10 @@
         public double GasReadStatus { get; set; }
 
         public double GasConsumption { get; set; }
+        public double WaterConsumption { get; set; }
+        public double CurrentPVPowerDelivery { get; set; }
+        public double BatteryCapacity { get; set; }
+
 
     }
 
