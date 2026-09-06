@@ -83,5 +83,7 @@
         public double PvInputPower { get; set; }
         [JsonPropertyName("battery_state_of_capacity_pct")]
         public double BatteryCapacity { get; set; }
+        [JsonPropertyName("water_consumption")]
+        public double WaterConsumption { get; set; }
     }
 }

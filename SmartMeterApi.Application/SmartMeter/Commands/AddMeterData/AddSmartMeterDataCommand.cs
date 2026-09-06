@@ -14,7 +14,7 @@ namespace SmartMeterApi.Application.SmartMeter.Commands.AddMeterData
     public class AddSmartMeterDataCommand : IRequest<Guid>
     {
         public AddSmartMeterDataCommand(SmartMeterDataDto dto)
-        { 
+        {
             Dto = dto;
         }
         public SmartMeterDataDto Dto { get; }
@@ -57,7 +57,11 @@ namespace SmartMeterApi.Application.SmartMeter.Commands.AddMeterData
                     GasDeviceId = request.Dto.GasDeviceId,
                     GasDeviceTypeId = request.Dto.GasDeviceTypeId,
                     GasConsumption = request.Dto.GasConsumption,
-                    GasReadStatus = request.Dto.GasReadStatus
+                    GasReadStatus = request.Dto.GasReadStatus,
+                    WaterConsumption = request.Dto.WaterConsumption,
+                    CurrentPVPowerDelivery = request.Dto.PvInputPower,
+                    BatteryCapacity = request.Dto.BatteryCapacity
+
                 };
                 await _influxService.WriteSmartMeterDataAsync(meterData);
                 _logger.Information($"Meter data added");
