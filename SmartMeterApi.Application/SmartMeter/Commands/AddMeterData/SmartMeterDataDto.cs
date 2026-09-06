@@ -79,5 +79,9 @@
 
         [JsonPropertyName("checksum")]
         public string Checksum { get; set; }
+        [JsonPropertyName("pv_input_power")]
+        public double PvInputPower { get; set; }
+        [JsonPropertyName("battery_state_of_capacity_pct")]
+        public double BatteryCapacity { get; set; }
     }
 }

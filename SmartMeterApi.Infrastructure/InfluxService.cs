@@ -44,7 +44,10 @@ public sealed class InfluxService : IInfluxService
             .Field("MeterStatus", meterData.MeterStatus)
             .Field("TariffIndicator", meterData.TariffIndicator)
             .Field("total_power_usage", meterData.TotalImportedActiveEnergy)
-            .Field("total_power_delivery", meterData.TotalActivePowerExported);
+            .Field("total_power_delivery", meterData.TotalActivePowerExported)
+            .Field("Pv_power_delivery", meterData.CurrentPVPowerDelivery)
+            .Field("BatteryCapacity", meterData.BatteryCapacity)
+            .Field("water_consumption",meterData.GasConsumption);
 
             //.Timestamp(meterData.Timestamp, WritePrecision.S);
 
