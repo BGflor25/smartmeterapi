@@ -40,15 +40,15 @@ RUN dotnet publish "SmartMeterApi.Api.csproj" \
 FROM base AS final
 WORKDIR /app
 
-# Run as non-root user (security best practice)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN useradd -m appuser
 USER appuser
 
-# Copy published output
 COPY --from=build /app/publish .
 
-# Optional healthcheck (enable once /health exists)
-# HEALTHCHECK --interval=30s --timeout=3s \
-#   CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "SmartMeterApi.Api.dll"]
