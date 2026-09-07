@@ -58,10 +58,7 @@ namespace SmartMeterApi.Application.SmartMeter.Commands.AddMeterData
                     GasDeviceTypeId = request.Dto.GasDeviceTypeId,
                     GasConsumption = request.Dto.GasConsumption,
                     GasReadStatus = request.Dto.GasReadStatus,
-                    WaterConsumption = request.Dto.WaterConsumption,
-                    CurrentPVPowerDelivery = request.Dto.PvInputPower,
-                    BatteryCapacity = request.Dto.BatteryCapacity
-
+                    WaterConsumption = request.Dto.WaterConsumption
                 };
                 await _influxService.WriteSmartMeterDataAsync(meterData);
                 _logger.Information($"Meter data added");
