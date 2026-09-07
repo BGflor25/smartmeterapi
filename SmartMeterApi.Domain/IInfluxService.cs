@@ -11,6 +11,7 @@ namespace SmartMeterApi.Domain
     {
         public Task WriteSmartMeterDataAsync(SmartMeterData meterData);
         public Task WriteWaterSoftenerDataAsync(WaterSoftenerCapacity waterSoftenerCapacity);
+        public Task WritePvInstallationDataAsync(Entities.PvInstallationData pvInstallationData);
 
     }
 }
