@@ -7,6 +7,8 @@ using SmartMeterApi.Application.Interfaces;
 using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
 using SmartMeterApi.Domain;
 using SmartMeterApi.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -29,6 +31,12 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseFastEndpoints();
+
+    // Health checks
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
     app.UseHttpsRedirection();
 
@@ -58,6 +66,10 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 
     // Logging
     services.AddSingleton(Log.Logger);
+
+    // Health checks
+    services.AddHealthChecks()
+        .AddCheck<SmartMeterApi.Infrastructure.HealthChecks.InfluxWriteHealthCheck>("influxdb_write");
 
     // ----------------------
     // InfluxDB
