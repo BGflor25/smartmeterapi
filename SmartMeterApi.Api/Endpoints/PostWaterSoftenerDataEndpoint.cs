@@ -1,29 +1,26 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using MediatR;
-using SmartMeterApi.Domain;
-using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
-using SmartMeterApi.Application.WaterSoftener.Commands.AddMeterData;
+using SmartMeterApi.Application.WaterSoftener.AddWaterSoftenerData;
 
-namespace SmartMeterApi.Api.Endpoints
+namespace SmartMeterApi.Api.Endpoints;
+
+public sealed class PostWaterSoftenerDataEndpoint(ISender sender) : Endpoint<WaterSoftenerDataRequest>
 {
-    public class PostWaterSoftenerDataEndpoint : Endpoint<WaterSoftenerDataDto>
+    public override void Configure()
     {
-        private readonly ISender _mediator;
-        public PostWaterSoftenerDataEndpoint(ISender mediator)
+        Post("/api/watersoftener/upload");
+        AllowAnonymous();
+        Summary(s =>
         {
-            _mediator = mediator;
-        }
-        public override void Configure()
-        {
-            Post("/api/watersoftener/upload");
-            AllowAnonymous();
-        }
+            s.Summary = "Upload a water softener salt-level distance reading";
+            s.Description = "Converts the distance to a ratio of the configured max depth and writes it to `water_softener_data`.";
+            s.Responses[204] = "Reading stored";
+        });
+    }
 
-        public override async Task HandleAsync(WaterSoftenerDataDto req, CancellationToken ct)
-        {
-            Logger.LogInformation("Received meter data upload request.");
-            await _mediator.Send(new AddWaterSoftenerDataCommand(req), ct);
-            await Send.NoContentAsync();
-        }
+    public override async Task HandleAsync(WaterSoftenerDataRequest req, CancellationToken ct)
+    {
+        await sender.Send(new AddWaterSoftenerDataCommand(req), ct);
+        await Send.NoContentAsync(ct);
     }
 }
