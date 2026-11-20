@@ -2,9 +2,9 @@
 
 A small ASP.NET Core API that collects home telemetry and stores it in **InfluxDB 2.x**:
 
-- **Smart meter**: P1 / DSMR telegrams (electricity, gas, water)
-- **PV installation**: inverter and battery-storage readings
-- **Water softener**: salt-tank level from a distance sensor
+- **Smart meter**: P1 / DSMR telegrams (electricity, gas, water) (https://github.com/BGflor25/Smartmeterworker)
+- **HUAWEI PV installation**: inverter and battery-storage readings (https://github.com/BGflor25/HuaweiSolarWorker)
+- **Water softener**: salt-tank level from a distance sensor (tba)
 
 Devices (e.g. an ESP32 or a Raspberry Pi reader script) `POST` JSON to the API. The API maps each payload to an InfluxDB point. Dashboards such as Grafana can then query the data.
 
