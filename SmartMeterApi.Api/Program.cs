@@ -1,89 +1,59 @@
 using FastEndpoints;
-using InfluxDB.Client;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Serilog;
-using SmartMeterApi.Application.Interfaces;
-using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
-using SmartMeterApi.Domain;
-using SmartMeterApi.Infrastructure;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using FastEndpoints.Swagger;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
+using SmartMeterApi.Application;
+using SmartMeterApi.Infrastructure;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .CreateLogger();
+    .CreateBootstrapLogger();
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    // Replace default logging with Serilog
-    builder.Host.UseSerilog();
+    builder.Services.AddSerilog((services, logger) => logger
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services));
 
-    ConfigureServices(builder.Services, builder.Configuration);
-    Log.Information("Environment: {env}", builder.Environment.EnvironmentName);
+    builder.Services
+        .AddApplication()
+        .AddInfrastructure(builder.Configuration);
+
+    builder.Services
+        .AddFastEndpoints()
+        .SwaggerDocument(o => o.DocumentSettings = s =>
+        {
+            s.Title = "SmartMeterApi";
+            s.Version = "v1";
+        });
 
     var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSerilogRequestLogging();
     app.UseFastEndpoints();
+    app.UseSwaggerGen();
 
-    // Health checks
     app.MapHealthChecks("/health", new HealthCheckOptions
     {
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
     });
 
-    app.UseHttpsRedirection();
-
-    app.Run();
-    Log.Information("Application started successfully");
+    Log.Information("Starting SmartMeterApi ({Environment})", app.Environment.EnvironmentName);
+    await app.RunAsync();
 }
-catch (Exception ex)
+catch (Exception ex) when (ex is not HostAbortedException)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
+    return 1;
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }
 
-void ConfigureServices(IServiceCollection services, IConfiguration configuration)
-{
-    // API basics
-    services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen();
-    services.AddFastEndpoints();
+return 0;
 
-    // MediatR
-    services.AddMediatR(cfg =>
-        cfg.RegisterServicesFromAssembly(
-            typeof(AddSmartMeterDataCommand).Assembly));
-
-    // Logging
-    services.AddSingleton(Log.Logger);
-
-    // Health checks
-    services.AddHealthChecks()
-        .AddCheck<SmartMeterApi.Infrastructure.HealthChecks.InfluxWriteHealthCheck>("influxdb_write");
-
-    // ----------------------
-    // InfluxDB
-    // ----------------------
-    services.AddSingleton<InfluxDBClient>(sp =>
-    {
-        var configuration = sp.GetRequiredService<IConfiguration>();
-
-        return new InfluxDBClient(
-            configuration["InfluxDB:Url"]!,
-            configuration["InfluxDB:Token"]!
-        );
-    });
-
-    services.AddScoped<IInfluxService, InfluxService>();
-
-}
+public partial class Program;

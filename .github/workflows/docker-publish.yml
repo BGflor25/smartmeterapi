@@ -1,17 +1,42 @@
-name: Build and publish Docker image
+name: Build, test and publish
 
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore SmartMeterApi.sln
+
+      - name: Build
+        run: dotnet build SmartMeterApi.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test SmartMeterApi.sln -c Release --no-build --verbosity normal
+
+  docker:
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,8 +49,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/bgflor25/smartmeterapi:latest
+          tags: |
+            ghcr.io/bgflor25/smartmeterapi:latest
+            ghcr.io/bgflor25/smartmeterapi:${{ github.sha }}

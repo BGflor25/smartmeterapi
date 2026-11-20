@@ -1,87 +1,39 @@
-﻿namespace SmartMeterApi.Domain.Entities
+using SmartMeterApi.Domain.ValueObjects;
+
+namespace SmartMeterApi.Domain.Entities;
+
+/// <summary>A single telegram read from a DSMR / P1 smart meter.</summary>
+public sealed class SmartMeterData
 {
-    using System.Text.Json.Serialization;
+    public double MeterModel { get; init; }
+    public double EquipmentIdentifier { get; init; }
+    public double Timestamp { get; init; }
 
-    public class SmartMeterData
-    {
-        public Guid Id { get; set; }
-        public double MeterModel { get; set; }
+    public Measurement? ElectricityImportLowTariff { get; init; }
+    public Measurement? ElectricityImportHighTariff { get; init; }
+    public Measurement? ElectricityExportLowTariff { get; init; }
+    public Measurement? ElectricityExportHighTariff { get; init; }
+    public double TariffIndicator { get; init; }
 
-        public double EquipmentIdentifier { get; set; }
+    public Measurement? TotalActivePowerExported { get; init; }
+    public double TotalImportedActiveEnergy { get; init; }
+    public double EventLogCount { get; init; }
 
-        public double Timestamp { get; set; }
-        public ElectricityTariff ElectricityImportLowTariff { get; set; }
+    public Measurement? CurrentPowerUsage { get; init; }
+    public Measurement? CurrentPowerDelivery { get; init; }
+    public Measurement? InstantaneousActivePowerL1 { get; init; }
+    public Measurement? InstantaneousActivePowerL2 { get; init; }
+    public Measurement? Voltage { get; init; }
+    public Measurement? Current { get; init; }
 
-        public ElectricityTariff ElectricityImportHighTariff { get; set; }
+    public double MeterStatus { get; init; }
+    public Measurement? MaxContractualPower { get; init; }
+    public Measurement? MaxCurrent { get; init; }
 
-        public ElectricityTariff ElectricityExportLowTariff { get; set; }
+    public double GasDeviceTypeId { get; init; }
+    public double GasDeviceId { get; init; }
+    public double GasReadStatus { get; init; }
+    public double GasConsumption { get; init; }
 
-        public ElectricityTariff ElectricityExportHighTariff { get; set; }
-
-        public double TariffIndicator { get; set; }
-
-        public PowerMeasurement TotalActivePowerExported { get; set; }
-
-        public double TotalImportedActiveEnergy { get; set; }
-
-        public double EventLogCount { get; set; }
-
-        public PowerMeasurement CurrentPowerUsage { get; set; }
-
-        public PowerMeasurement CurrentPowerDelivery { get; set; }
-
-        public PowerMeasurement InstantaneousActivePowerL1 { get; set; }
-
-        public PowerMeasurement InstantaneousActivePowerL2 { get; set; }
-
-        public VoltageCurrent Voltage { get; set; }
-
-        public VoltageCurrent Current { get; set; }
-
-        public double MeterStatus { get; set; }
-
-        public PowerMeasurement MaxContractualPower { get; set; }
-
-        public VoltageCurrent MaxCurrent { get; set; }
-
-        public double GasDeviceTypeId { get; set; }
-
-        public double GasDeviceId { get; set; }
-
-        public double GasReadStatus { get; set; }
-
-        public double GasConsumption { get; set; }
-        public double WaterConsumption { get; set; }
-        public double CurrentPVPowerDelivery { get; set; }
-        public double BatteryCapacity { get; set; }
-
-
-    }
-
-    public class ElectricityTariff
-    {
-        [JsonPropertyName("value")]
-        public double Value { get; set; }
-
-        [JsonPropertyName("unit")]
-        public string Unit { get; set; }
-    }
-
-    public class PowerMeasurement
-    {
-        [JsonPropertyName("value")]
-        public double Value { get; set; }
-
-        [JsonPropertyName("unit")]
-        public string Unit { get; set; }
-    }
-
-    public class VoltageCurrent
-    {
-        [JsonPropertyName("value")]
-        public double Value { get; set; }
-
-        [JsonPropertyName("unit")]
-        public string Unit { get; set; }
-    }
+    public double WaterConsumption { get; init; }
 }

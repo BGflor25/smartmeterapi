@@ -1,28 +1,26 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using MediatR;
-using SmartMeterApi.Domain;
-using SmartMeterApi.Application.SmartMeter.Commands.AddMeterData;
+using SmartMeterApi.Application.SmartMeter.AddSmartMeterData;
 
-namespace SmartMeterApi.Api.Endpoints
+namespace SmartMeterApi.Api.Endpoints;
+
+public sealed class PostSmartMeterDataEndpoint(ISender sender) : Endpoint<SmartMeterDataRequest>
 {
-    public class PostSmartMeterDataEndpoint : Endpoint<SmartMeterDataDto>
+    public override void Configure()
     {
-        private readonly ISender _mediator;
-        public PostSmartMeterDataEndpoint(ISender mediator)
+        Post("/api/meterdata/upload");
+        AllowAnonymous();
+        Summary(s =>
         {
-            _mediator = mediator;
-        }
-        public override void Configure()
-        {
-            Post("/api/meterdata/upload");
-            AllowAnonymous();
-        }
+            s.Summary = "Upload a smart meter (P1/DSMR) telegram";
+            s.Description = "Writes the reading to the `meter_data` measurement in the smart meter bucket.";
+            s.Responses[204] = "Reading stored";
+        });
+    }
 
-        public override async Task HandleAsync(SmartMeterDataDto req, CancellationToken ct)
-        {
-            Logger.LogInformation("Received meter data upload request.");
-            await _mediator.Send(new AddSmartMeterDataCommand(req), ct);
-            await Send.NoContentAsync();
-        }
+    public override async Task HandleAsync(SmartMeterDataRequest req, CancellationToken ct)
+    {
+        await sender.Send(new AddSmartMeterDataCommand(req), ct);
+        await Send.NoContentAsync(ct);
     }
 }

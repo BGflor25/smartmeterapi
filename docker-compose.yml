@@ -1,6 +1,16 @@
 services:
   smartmeterapi.api:
-    image: ${DOCKER_REGISTRY-}smartmeterapiapi
+    image: ${DOCKER_REGISTRY-}smartmeterapi
     build:
       context: .
-      dockerfile: SmartMeterApi.Api/Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - InfluxDB__Url=${INFLUXDB_URL}
+      - InfluxDB__Token=${INFLUXDB_TOKEN}
+      - InfluxDB__Org=${INFLUXDB_ORG}
+      - InfluxDB__SmartMeterBucket=${INFLUXDB_SMARTMETER_BUCKET}
+      - InfluxDB__PvBucket=${INFLUXDB_PV_BUCKET}
+      - InfluxDB__WaterSoftenerCapacityBucket=${INFLUXDB_WATERSOFTENER_BUCKET}
+      - InfluxDB__WaterSoftenerMaxDepth=${WATERSOFTENER_MAX_DEPTH}

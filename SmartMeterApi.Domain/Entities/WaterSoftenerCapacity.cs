@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace SmartMeterApi.Domain.Entities;
 
-namespace SmartMeterApi.Domain.Entities
+/// <summary>
+/// Fill level of the water-softener salt tank, expressed as the ratio
+/// measured distance / configured maximum depth (0 = sensor touching the salt).
+/// </summary>
+public sealed record WaterSoftenerCapacity(double Ratio)
 {
-    public class WaterSoftenerCapacity
+    public static WaterSoftenerCapacity FromDistance(double distance, double maxDepth)
     {
-        public double Percentage { get; set; }
+        if (maxDepth <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxDepth), maxDepth, "Max depth must be greater than zero.");
+        }
+
+        return new WaterSoftenerCapacity(distance / maxDepth);
     }
 }
